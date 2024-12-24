@@ -10,7 +10,7 @@ public class Imitator {
     }
     public LinkedList<Passenger> passengers;
     private final Random randomizer;
-    private final Scanner scanner;
+    public final Scanner scanner;
     private static final int HOURS = 18;
     private int average_boat_arrival_time;
     private int average_passenger_arrival_time;

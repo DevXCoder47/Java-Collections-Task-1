@@ -4,5 +4,6 @@ public class Main {
     public static void main(String[] args) {
         Imitator imitator = new Imitator();
         imitator.imitate();
+        imitator.scanner.close();
     }
 }
