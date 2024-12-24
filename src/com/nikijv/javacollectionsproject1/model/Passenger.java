@@ -6,6 +6,6 @@ public class Passenger {
         this.name = name;
     }
     public String toString() {
-        return "Passenger: " + name;
+        return name;
     }
 }

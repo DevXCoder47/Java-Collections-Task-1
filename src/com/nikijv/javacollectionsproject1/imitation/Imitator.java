@@ -4,41 +4,67 @@ import java.util.LinkedList;
 import java.util.Random;
 import java.util.Scanner;
 public class Imitator {
-    public LinkedList<Boat> boats;
+    public enum Stop{
+        FINAL,
+        NON_FINAL
+    }
     public LinkedList<Passenger> passengers;
     private final Random randomizer;
     private final Scanner scanner;
     private static final int HOURS = 18;
-    private int average_boat_time;
-    private int average_passenger_time;
-    private Boat.Stop stop;
+    private int average_boat_arrival_time;
+    private int average_passenger_arrival_time;
+    private Stop stop;
     public Imitator() {
-        boats = new LinkedList<Boat>();
         passengers = new LinkedList<Passenger>();
         randomizer = new Random();
         scanner = new Scanner(System.in);
     }
     public void imitate() {
         getInputs();
-        double average_passenger_time = 0.0;
+        double average_passenger_time = 0;
         int boat_arrival_interval = 0;
-        int passenger_count = 0;
-        int hours_sum = 0;
+        double passenger_count = 0;
+        int current_passenger_count = 0;
+        double hours_sum = 0;
         for(int i = 0; i < HOURS; i++){
-
+            if(i % average_passenger_arrival_time == 0) {
+                Passenger passenger = new Passenger("PName " + i);
+                passengers.add(passenger);
+                System.out.println("Passenger " + passenger + " came");
+                passenger_count++;
+                current_passenger_count++;
+            }
+            if(i % average_boat_arrival_time == 0){
+                int free_seats = randomizer.nextInt(0, 6);
+                System.out.println("Boat arrived. Stop is " + stop + ". Free seats - " + free_seats);
+                if(current_passenger_count <= 5)
+                    boat_arrival_interval = average_boat_arrival_time;
+                for(int j = 0; j < free_seats; j++){
+                    if(passengers.isEmpty())
+                        break;
+                    Passenger passenger = passengers.removeFirst();
+                    hours_sum += passenger.hours_waited;
+                    current_passenger_count--;
+                }
+                if(!passengers.isEmpty())
+                    for(Passenger passenger : passengers)
+                        passenger.hours_waited++;
+            }
         }
+        average_passenger_time = hours_sum / passenger_count;
         reportResults(average_passenger_time, boat_arrival_interval);
     }
     private void reportResults(double average_passenger_time, int boat_arrival_interval){
-        System.out.println("Average passenger time in queue - " + (int)average_passenger_time + " hours");
+        System.out.println("Average passenger time in queue - " + average_passenger_time + " hours");
         System.out.println("Boat arrival interval for not overflowing passenger count 5 in queue - " + boat_arrival_interval + " hours");
     }
     private void getInputs(){
-        average_boat_time = getAverage("boat");
-        average_passenger_time = getAverage("passenger");
+        average_boat_arrival_time = getAverage("boat");
+        average_passenger_arrival_time = getAverage("passenger");
         stop = switch(getStopType()){
-            case 1 -> Boat.Stop.FINAL;
-            case 2 -> Boat.Stop.NON_FINAL;
+            case 1 -> Stop.FINAL;
+            case 2 -> Stop.NON_FINAL;
             default -> null;
         };
     }
